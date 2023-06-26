@@ -50,7 +50,7 @@
     },
     "seed": {
       "executor": "nx:run-commands",
-      "dependsOn": ["seed-build"],
+      "dependsOn": ["seed-build", "push"],
       "options": {
         "command": "node dist/libs/db/seed.js --reset --s3files"
       }

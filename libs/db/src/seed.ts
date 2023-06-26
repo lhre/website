@@ -29,8 +29,8 @@ const prisma = new PrismaClient();
 const USERS_TO_CREATE = 50,
   USERS_TO_MAKE_MAPPERS = 5,
   MAPPERS_TO_UPLOAD_MAPS = 10,
-  MIN_MAPS_TO_UPLOAD_EACH = 1,
-  MAX_MAPS_TO_UPLOAD_EACH = 4,
+  MIN_MAPS_TO_UPLOAD_EACH = 5,
+  MAX_MAPS_TO_UPLOAD_EACH = 10,
   MIN_TRACKS_PER_MAP = 1,
   MAX_TRACKS_PER_MAP = 20,
   MIN_ZONES_PER_TRACK = 1,
@@ -173,7 +173,7 @@ async function createRandomMap(submitterID) {
     data: {
       name: `${MapTypePrefix.get(type)}_${faker.lorem.word()}`,
       type: type,
-      status: Random.enumValue(MapStatus),
+      status: Random.bool() ? MapStatus.APPROVED : Random.enumValue(MapStatus),
       fileKey: faker.animal.cat(),
       hash: faker.random.alphaNumeric(),
       submitterID: submitterID,
@@ -328,7 +328,7 @@ async function createRandomRun(mapID, userID, baseStatsID) {
       ticks: ticks,
       tickRate: tickRate,
       flags: 0,
-      file: faker.image.cats(),
+      file: faker.animal.horse().replaceAll(' ', ''),
       hash: faker.random.alphaNumeric(),
       time: ticks * tickRate,
       ...Random.createdUpdatedDates()
@@ -464,6 +464,10 @@ async function uploadMaps() {
               },
               async () => {
                 const track = await createRandomMapTrack(map.id);
+                await prisma.map.update({
+                  where: { id: map.id },
+                  data: { mainTrack: { connect: { id: track.id } } }
+                });
 
                 const baseStats = await createRandomBaseStats();
                 await createRandomMapTrackStats(track.id, baseStats.id);

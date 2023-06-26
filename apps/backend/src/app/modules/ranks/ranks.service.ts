@@ -101,7 +101,7 @@ export class RanksService {
     userID: number,
     mapID: number,
     query: MapRankGetNumberQueryDto
-  ): Promise<RankDto[]> {
+  ): Promise<PagedResponseDto<RankDto>> {
     const where: Prisma.RankWhereInput = {
       mapID: mapID,
       flags: 0,
@@ -130,7 +130,7 @@ export class RanksService {
     where.userID = undefined;
 
     // Don't care about the count
-    const [ranks] = await this.runRepo.getRanks(
+    const dbResponse = await this.runRepo.getRanks(
       where,
       include,
       undefined,
@@ -141,16 +141,16 @@ export class RanksService {
       11 // 5 + yours + 5
     );
 
-    this.formatRanksDbResponse(ranks);
+    this.formatRanksDbResponse(dbResponse[0]);
 
-    return ranks.map((rank) => DtoFactory(RankDto, rank));
+    return new PagedResponseDto(RankDto, dbResponse);
   }
 
   async getRankFriends(
     steamID: bigint,
     mapID: number,
     query: MapRankGetNumberQueryDto
-  ): Promise<RankDto[]> {
+  ): Promise<PagedResponseDto<RankDto>> {
     const map = await this.mapRepo.get(mapID);
 
     if (!map) throw new NotFoundException('Map not found');
@@ -175,12 +175,11 @@ export class RanksService {
 
     const include = { run: true, user: true };
 
-    // Don't care about the count
-    const [ranks] = await this.runRepo.getRanks(where, include);
+    const dbResponse = await this.runRepo.getRanks(where, include);
 
-    this.formatRanksDbResponse(ranks);
+    this.formatRanksDbResponse(dbResponse[0]);
 
-    return ranks.map((rank) => DtoFactory(RankDto, rank));
+    return new PagedResponseDto(RankDto, dbResponse);
   }
 
   // This is done because the MapRankDto still contains trackNum and zoneNum to
