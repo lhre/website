@@ -13,10 +13,6 @@ import { MarkdownModule, MarkedOptions } from 'ngx-markdown';
 import { RefreshTokenInterceptorService } from './services/refresh-token-interceptor.service';
 import { env } from '@momentum/frontend/env';
 
-export function tokenGetter() {
-  return localStorage.getItem('accessToken');
-}
-
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -29,7 +25,7 @@ export function tokenGetter() {
     HttpClientModule,
     JwtModule.forRoot({
       config: {
-        tokenGetter: tokenGetter,
+        tokenGetter: () => localStorage.getItem('accessToken'),
         allowedDomains: [
           'localhost:3000',
           'localhost:4200',
