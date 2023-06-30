@@ -144,6 +144,7 @@
           <mom-map-credits
             [credits]="credits"
             [editable]="true"
+            [deletable]="isAdmin || !isApproved"
             (creditChange)="onCreditChanged($event)"
           />
         </div>

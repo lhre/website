@@ -25,6 +25,7 @@ export class MapCreditComponent {
   @Input() type: MapCreditType;
   @Input() credits: Record<MapCreditType, Partial<MapCredit>[]>;
   @Input() editable: boolean;
+  @Input() deletable: boolean;
   @Output() creditChange: EventEmitter<CreditChangeEvent>;
 
   protected readonly SearchState = SearchState;

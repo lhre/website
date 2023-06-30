@@ -3,6 +3,7 @@
     <mom-map-credit
       category="Authors"
       [editable]="editable"
+      [deletable]="deletable"
       [type]="MapCreditType.AUTHOR"
       [credits]="credits"
       (creditChange)="creditChange.emit($event)"
@@ -12,6 +13,7 @@
     <mom-map-credit
       category="Co-Authors"
       [editable]="editable"
+      [deletable]="deletable"
       [type]="MapCreditType.COAUTHOR"
       [credits]="credits"
       (creditChange)="creditChange.emit($event)"
@@ -21,6 +23,7 @@
     <mom-map-credit
       category="Testers"
       [editable]="editable"
+      [deletable]="deletable"
       [type]="MapCreditType.TESTER"
       [credits]="credits"
       (creditChange)="creditChange.emit($event)"
@@ -30,6 +33,7 @@
     <mom-map-credit
       category="Special Thanks"
       [editable]="editable"
+      [deletable]="deletable"
       [type]="MapCreditType.SPECIAL_THANKS"
       [credits]="credits"
       (creditChange)="creditChange.emit($event)"

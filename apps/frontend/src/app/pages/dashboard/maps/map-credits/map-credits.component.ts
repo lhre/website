@@ -12,6 +12,7 @@ export class MapCreditsComponent {
   protected readonly MapCreditType = MapCreditType;
   @Input() credits: Record<MapCreditType, Partial<MapCredit>[]>;
   @Input() editable: boolean;
+  @Input() deletable: boolean;
   @Output() creditChange: EventEmitter<CreditChangeEvent>;
   constructor() {
     this.credits = {

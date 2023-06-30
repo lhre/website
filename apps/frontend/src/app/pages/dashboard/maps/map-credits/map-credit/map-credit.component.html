@@ -12,6 +12,7 @@
           outline
           status="danger"
           size="tiny"
+          [disabled]="!deletable"
           (click)="removeUser(credit.user)"
         >
           <nb-icon icon="close" pack="mdi" />
