@@ -9,7 +9,7 @@
             [reportType]="ReportType.MAP_REPORT"
             [reportData]="map.id.toString()"
           />
-          <div *ngIf="isSubmitter || isAdmin || isModerator">
+          <div *ngIf="isSubmitter || isAdmin || (isModerator && !isApproved)">
             <button
               nbButton
               outline

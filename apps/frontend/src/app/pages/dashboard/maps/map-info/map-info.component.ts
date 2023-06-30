@@ -12,7 +12,7 @@ import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { MapNotifyEditComponent } from './map-info-notify-edit/map-info-notify-edit.component';
 import { Map, MapImage, MapNotify } from '@momentum/types';
-import { ReportType } from '@momentum/constants';
+import { MapStatus, ReportType, Role } from '@momentum/constants';
 import { LocalUserService, MapsService } from '@momentum/frontend/data';
 import { PartialDeep } from 'type-fest';
 
@@ -29,6 +29,7 @@ export class MapInfoComponent implements OnInit, OnDestroy {
   >;
   protected readonly ReportType = ReportType;
   map: Map;
+  isApproved: boolean;
   mapNotify: MapNotify;
   mapNotifications: boolean;
   mapInLibrary: boolean;
@@ -64,6 +65,7 @@ export class MapInfoComponent implements OnInit, OnDestroy {
     this.ReportType = ReportType;
     this.mapInLibrary = false;
     this.map = undefined;
+    this.isApproved = false;
     this.previewMap = undefined;
     this.mapInFavorites = false;
     this.mapNotify = undefined;
@@ -104,6 +106,7 @@ export class MapInfoComponent implements OnInit, OnDestroy {
         )
         .subscribe((map) => {
           this.map = map;
+          this.isApproved = map.status === MapStatus.APPROVED;
           this.localUserService.checkMapNotify(this.map.id).subscribe({
             next: (resp) => {
               this.mapNotify = resp;
@@ -125,14 +128,16 @@ export class MapInfoComponent implements OnInit, OnDestroy {
           this.localUserService
             .getLocal()
             .pipe(takeUntil(this.ngUnsub))
-            .subscribe((locUser) => {
-              // TODO
-              // this.isAdmin = this.locUserService.hasRole(Role.ADMIN, locUser);
-              // this.isModerator = this.locUserService.hasRole(
-              //   Role.MODERATOR,
-              //   locUser
-              // );
-              this.isSubmitter = this.map.submitterID === locUser.id;
+            .subscribe((localUser) => {
+              this.isAdmin = this.localUserService.hasRole(
+                Role.ADMIN,
+                localUser
+              );
+              this.isModerator = this.localUserService.hasRole(
+                Role.MODERATOR,
+                localUser
+              );
+              this.isSubmitter = this.map.submitterID === localUser.id;
             });
         });
     }

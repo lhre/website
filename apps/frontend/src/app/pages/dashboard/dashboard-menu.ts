@@ -37,7 +37,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
         link: '/dashboard/maps/uploads',
         pathMatch: 'prefix',
         data: {
-          roles: [Role.MAPPER, Role.ADMIN]
+          roles: [Role.MAPPER, Role.ADMIN, Role.MODERATOR]
         }
       },
       {
