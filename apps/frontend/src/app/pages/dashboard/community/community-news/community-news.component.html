@@ -8,13 +8,13 @@
         <div *ngFor="let blogPost of feed.item.slice(0, POSTS_DISPLAYED)">
           <div class="row align-items-end">
             <h2 class="col">{{ blogPost.title }}</h2>
-            <h5 class="col-auto ml-auto d-none d-sm-block pubDate">
+            <h5 class="col-auto ms-auto d-none d-sm-block pubDate">
               {{ blogPost.pubDate }}
             </h5>
           </div>
           <p class="pb-3 post-separator">
             <span
-              class="mr-2 md-override"
+              class="me-2 md-override"
               [innerHTML]="blogPost['content:encoded']"
             ></span>
             <a [href]="blogPost.link" target="_blank" class="text-nowrap"

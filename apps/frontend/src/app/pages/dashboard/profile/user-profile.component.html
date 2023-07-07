@@ -7,7 +7,7 @@
           [title]="countryDisplayName"
           class="rounded flg fi fi-{{ user.country.toLowerCase() }}"
         ></span>
-        <div class="d-flex align-items-center top-right-toolbar">
+        <div class="d-flex align-items-center top-end-toolbar">
           <mom-report-button
             *ngIf="!isLocal"
             [reportType]="ReportType.USER_PROFILE_REPORT"
@@ -18,7 +18,7 @@
               nbButton
               outline
               status="info"
-              class="ml-2"
+              class="ms-2"
               type="button"
               (click)="onEditProfile()"
             >
@@ -32,7 +32,7 @@
           <div class="col-auto mb-2">
             <div
               *ngIf="avatarLoaded"
-              class="ml-2 ml-md-4 user-image"
+              class="ms-2 ms-md-4 user-image"
               [ngStyle]="{ 'background-image': 'url(' + avatarUrl + ')' }"
             ></div>
           </div>
@@ -42,7 +42,7 @@
                 <h1>{{ user.alias }}</h1>
                 <img
                   *ngIf="isVerified"
-                  class="ml-2 verified"
+                  class="ms-2 verified"
                   ngSrc="assets/images/badges/BadgeVerified.svg"
                   nbPopover="Verified"
                   nbPopoverTrigger="hint"
@@ -89,9 +89,9 @@
             </div>
           </div>
         </div>
-        <div class="row no-gutters align-items-center">
+        <div class="row g-0 align-items-center">
           <div class="col">
-            <div class="ml-0 ml-md-2 socials">
+            <div class="ms-0 ms-md-2 socials">
               <a
                 *ngIf="!hasRole(Role.PLACEHOLDER)"
                 href="https://steamcommunity.com/profiles/{{ user.steamID }}"

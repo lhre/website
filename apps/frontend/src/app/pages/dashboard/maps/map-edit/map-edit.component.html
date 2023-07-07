@@ -2,7 +2,7 @@
   <nb-card-header>
     <div class="row align-items-center">
       <h2 class="col">Edit Map</h2>
-      <div class="col-auto ml-auto">
+      <div class="col-auto ms-auto">
         <button
           nbButton
           outline
@@ -45,7 +45,7 @@
           >
             Text cannot exceed 1000 characters.
           </nb-alert>
-          <span class="form-text d-flex justify-content-end mt-2 mr-2"
+          <span class="form-text d-flex justify-content-end mt-2 me-2"
             >{{
               1000 - description.value.length | plural : 'character'
             }}
@@ -67,9 +67,9 @@
     <nb-tab tabTitle="Images">
       <form (ngSubmit)="onImagesSubmit()">
         <div class="text-center overflow-auto mt-2">
-          <div class="d-inline-block text-left mb-3">
-            <h5 class="font-weight-lighter mx-2">
-              <div class="d-inline-block font-weight-normal thumb-text">
+          <div class="d-inline-block text-start mb-3">
+            <h5 class="fw-lighter mx-2">
+              <div class="d-inline-block fw-normal thumb-text">
                 Thumbnail&nbsp;
               </div>
               <div class="d-inline-block">Extra Images</div>
@@ -111,7 +111,7 @@
           </div>
         </div>
         <div class="d-inline-flex align-items-center submit-btn">
-          <button nbButton outline status="info" class="mr-2" type="submit">
+          <button nbButton outline status="info" class="me-2" type="submit">
             Save images
           </button>
           <nb-icon
@@ -149,7 +149,7 @@
       tabTitle="Admin Map Settings"
     >
       <form [formGroup]="adminForm">
-        <div class="text-right">
+        <div class="text-end">
           <button
             nbButton
             outline

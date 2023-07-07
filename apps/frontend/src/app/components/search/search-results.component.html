@@ -1,4 +1,4 @@
-<h3 class="text-left">
+<h3 class="text-start">
   <nb-icon [icon]="usersResults ? 'account-multiple' : 'panorama'"></nb-icon>
   {{ usersResults ? 'Users' : 'Maps' }}
 </h3>
@@ -6,7 +6,7 @@
 <span *ngIf="shouldShowEmpty()"
   >No {{ usersResults ? 'users' : 'maps' }} found</span
 >
-<div class="d-inline-flex flex-column text-left">
+<div class="d-inline-flex flex-column text-start">
   <div *ngFor="let elem of elems">
     <div class="mb-1 clickable" *ngIf="usersResults" (click)="clickElem(elem)">
       <nb-user
@@ -20,8 +20,8 @@
       *ngIf="!usersResults"
       (click)="clickElem(elem)"
     >
-      <img class="mr-2 rounded avatar" [src]="getElemPicture(elem)" fill />
-      <div class="ml-1 name">{{ getElemName(elem) }}</div>
+      <img class="me-2 rounded avatar" [src]="getElemPicture(elem)" fill />
+      <div class="ms-1 name">{{ getElemName(elem) }}</div>
     </div>
   </div>
 </div>

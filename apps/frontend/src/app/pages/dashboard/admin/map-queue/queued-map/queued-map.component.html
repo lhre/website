@@ -1,4 +1,4 @@
-<div class="row no-gutters py-2 pt-sm-0 pb-lg-0 align-items-center">
+<div class="row g-0 py-2 pt-sm-0 pb-lg-0 align-items-center">
   <div class="col-12 col-lg-6 mb-3 mb-lg-0">
     <div class="row align-items-sm-center">
       <div
@@ -13,7 +13,7 @@
           />
         </a>
       </div>
-      <div class="col-6 col-sm-4 col-lg-3 text-right text-sm-left">
+      <div class="col-6 col-sm-4 col-lg-3 text-end text-sm-left">
         <ul>
           <li>Map Name:</li>
           <li>Submitted:</li>
@@ -37,7 +37,7 @@
     </div>
   </div>
   <div class="col-12 col-lg-6">
-    <div class="row no-gutters align-items-sm-center">
+    <div class="row g-0 align-items-sm-center">
       <div class="col-12 col-sm mb-2 mb-sm-0 text-center">
         <a #mapFileDownloadLink class="allowed"></a>
         <button
@@ -49,11 +49,11 @@
           Download
         </button>
       </div>
-      <div class="col-auto mx-auto mr-sm-2">
+      <div class="col-auto mx-auto me-sm-2">
         <div class="d-flex flex-lg-column button-group">
           <button
             type="button"
-            class="btn btn-success mr-2 mr-lg-0 mb-lg-2"
+            class="btn btn-success me-2 me-lg-0 mb-lg-2"
             (click)="updateMapStatus(map?.id, MapUploadStatus.APPROVED)"
           >
             <nb-icon icon="check-circle-outline" />

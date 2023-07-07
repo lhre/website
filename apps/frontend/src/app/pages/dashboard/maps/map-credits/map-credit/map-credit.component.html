@@ -6,7 +6,7 @@
         [name]="credit.user.alias"
         [picture]="credit.user.avatarURL"
       ></nb-user>
-      <div class="ml-auto" *ngIf="editable">
+      <div class="ms-auto" *ngIf="editable">
         <button
           nbButton
           outline
@@ -27,7 +27,7 @@
   >
     User already selected!
   </div>
-  <mom-user-search class="text-left" (selectedUserEmit)="addUser($event)" />
+  <mom-user-search class="text-start" (selectedUserEmit)="addUser($event)" />
   <button
     class="mt-3"
     nbButton

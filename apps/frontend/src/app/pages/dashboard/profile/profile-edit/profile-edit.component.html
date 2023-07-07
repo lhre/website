@@ -2,7 +2,7 @@
   <nb-card-header>
     <div class="row align-items-center">
       <h2 class="col">Edit Profile</h2>
-      <div class="col-auto ml-auto">
+      <div class="col-auto ms-auto">
         <button nbButton outline status="info" (click)="returnToProfile()">
           Return to Profile
         </button>
@@ -91,7 +91,7 @@
               >
                 Text cannot exceed 1000 characters.
               </nb-alert>
-              <span class="form-text d-flex justify-content-end mt-2 mr-2"
+              <span class="form-text d-flex justify-content-end mt-2 me-2"
                 >{{
                   1000 - description.value.length | plural : 'character'
                 }}
@@ -154,7 +154,7 @@
         </div>
         <div
           *ngIf="user.profile.twitchAuth"
-          class="mt-2 mb-3 text-right text-warning"
+          class="mt-2 mb-3 text-end text-warning"
         >
           <div>
             Note: You'll also have to manually disconnect "Momentum" from your
@@ -265,7 +265,7 @@
                   status="info"
                   size="small"
                   (click)="cancelMerge()"
-                  class="mt-1 mr-2"
+                  class="mt-1 me-2"
                 >
                   Cancel
                 </button>
@@ -282,7 +282,7 @@
                 </button>
               </div>
             </div>
-            <div class="text-right">
+            <div class="text-end">
               <button
                 type="button"
                 nbButton

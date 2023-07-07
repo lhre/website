@@ -2,7 +2,7 @@
   <nb-card-header>
     <div class="row">
       <h2 class="col my-auto">{{ map.name }}</h2>
-      <div class="col-auto ml-auto">
+      <div class="col-auto ms-auto">
         <div class="d-flex align-items-center" *ngIf="!previewMap">
           <mom-report-button
             *ngIf="!isSubmitter"
@@ -14,7 +14,7 @@
               nbButton
               outline
               status="info"
-              class="ml-2"
+              class="ms-2"
               type="button"
               (click)="onEditMap()"
             >
@@ -75,7 +75,7 @@
             <mom-map-info-stats [map]="map" />
           </nb-tab>
         </nb-tabset>
-        <div class="row no-gutters">
+        <div class="row g-0">
           <div class="col-12 col-sm">
             <h6>
               Added On:
@@ -109,7 +109,7 @@
                 {{ map.stats?.subscriptions | thousandsSuffix : 1 }}
               </div>
               <div
-                class="ml-sm-4 stat"
+                class="ms-sm-4 stat"
                 nbPopover="{{ map.stats?.favorites | plural : 'Favorite' }}"
                 nbPopoverTrigger="hint"
               >
@@ -117,7 +117,7 @@
                 {{ map.stats?.favorites | thousandsSuffix : 1 }}
               </div>
               <div
-                class="ml-sm-4 stat"
+                class="ms-sm-4 stat"
                 nbPopover="{{ map.stats?.downloads | plural : 'Download' }}"
                 nbPopoverTrigger="hint"
               >
@@ -125,7 +125,7 @@
                 {{ map.stats?.downloads | thousandsSuffix : 1 }}
               </div>
               <div
-                class="ml-sm-4 stat"
+                class="ms-sm-4 stat"
                 nbPopover="{{ map.stats?.plays | plural : 'Play' }}"
                 nbPopoverTrigger="hint"
               >

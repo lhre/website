@@ -10,8 +10,8 @@
               size="large"
             />
           </a>
-          <h2 class="ml-2">on</h2>
-          <h2 class="ml-2">
+          <h2 class="ms-2">on</h2>
+          <h2 class="ms-2">
             <a [routerLink]="'/dashboard/maps/' + run.mapID">{{
               run.map.name
             }}</a>
@@ -20,7 +20,7 @@
       </div>
       <div class="col" *ngIf="personalBestRun && personalBestRun.id !== run.id">
         <div class="d-flex justify-content-end align-items-center">
-          <h4 class="mr-3 text-right d-none d-sm-block notice">
+          <h4 class="me-3 text-end d-none d-sm-block notice">
             Note: Not viewing their personal best!
           </h4>
           <button

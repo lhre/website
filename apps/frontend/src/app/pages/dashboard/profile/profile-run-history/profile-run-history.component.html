@@ -29,7 +29,7 @@
       <div class="col-md-2">
         <nb-checkbox formControlName="isPersonalBest">Is PB</nb-checkbox>
       </div>
-      <div class="col-md mb-2 mb-md-0 text-left text-md-center">
+      <div class="col-md mb-2 mb-md-0 text-start text-md-center">
         <input
           nbInput
           class="form-control"
@@ -38,13 +38,13 @@
           formControlName="map"
         />
       </div>
-      <div class="col-md text-left text-md-center">
+      <div class="col-md text-start text-md-center">
         <nb-select placeholder="Sort by" formControlName="order">
           <nb-option [value]="'date'">Sort by Date</nb-option>
           <nb-option [value]="'time'">Sort by Time</nb-option>
         </nb-select>
       </div>
-      <div class="col col-md-auto mr-6 mt-2 mt-md-0">
+      <div class="col col-md-auto me-6 mt-2 mt-md-0">
         <button nbButton outline status="info" (click)="onFilterApply()">
           Apply
         </button>
@@ -64,8 +64,8 @@
               }
       "
     >
-      <div class="row no-gutters align-items-center">
-        <div class="col-2 col-sm-1 icon pl-0 pl-md-3">
+      <div class="row g-0 align-items-center">
+        <div class="col-2 col-sm-1 icon ps-0 ps-md-3">
           <nb-icon
             *ngIf="run.rank"
             icon="trophy-outline"
@@ -80,7 +80,7 @@
             >
           </a>
         </div>
-        <div class="col-auto ml-auto text">{{ run.createdAt | timeAgo }}</div>
+        <div class="col-auto ms-auto text">{{ run.createdAt | timeAgo }}</div>
       </div>
     </nb-list-item>
   </nb-list>

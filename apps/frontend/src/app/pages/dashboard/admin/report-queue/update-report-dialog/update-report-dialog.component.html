@@ -5,7 +5,7 @@
   <nb-card-body>
     <form [formGroup]="updateReportForm">
       <div class="form-group">
-        <label class="mr-3">Resolved</label>
+        <label class="me-3">Resolved</label>
         <nb-radio-group formControlName="resolved">
           <nb-radio [value]="true" class="d-inline-block">Yes</nb-radio>
           <nb-radio [value]="false" class="d-inline-block">No</nb-radio>
@@ -25,11 +25,11 @@
     </form>
   </nb-card-body>
   <nb-card-footer>
-    <div class="row no-gutters">
-      <div class="col-6 pr-1">
+    <div class="row g-0">
+      <div class="col-6 pe-1">
         <button class="btn btn-dark w-100" (click)="cancel()">Cancel</button>
       </div>
-      <div class="col-6 pl-1">
+      <div class="col-6 ps-1">
         <button
           class="btn btn-success w-100"
           (click)="save()"
