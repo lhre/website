@@ -5,7 +5,7 @@ import { switchMap, takeUntil } from 'rxjs/operators';
 import { of, Subject } from 'rxjs';
 import { ConfirmDialogComponent } from '../../../../components/confirm-dialog/confirm-dialog.component';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
-import { AdminUpdateUser, UpdateUser, User } from '@momentum/types';
+import { AdminUpdateUser, UpdateUser, User } from '@momentum/constants';
 import {
   AdminService,
   AuthService,
