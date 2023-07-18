@@ -1,3 +1,4 @@
+import { Gamemode } from '../../../../';
 import { LeaderboardType } from '../../../../enums/leaderboard-type.enum';
 
 export interface MapSubmissionSuggestionsModel {
