@@ -7,6 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// #region
+
 model User {
   id Int @id @default(autoincrement())
 
@@ -26,7 +28,8 @@ model User {
   mapFavorites      MapFavorite[]
   mapLibraryEntries MapLibraryEntry[]
   mapRanks          Rank[]
-  mapReviews        MapReview[]
+  mapReviews        MapReview[]        @relation("mapreview_reviewer")
+  mapReviewResolver MapReview[]        @relation("mapreview_resolver")
   mapReviewComments MapReviewComment[]
   activities        Activity[]
   follows           Follow[]           @relation("follow_follow")
@@ -422,6 +425,103 @@ model MapStats {
   @@index([baseStatsID, mapID])
 }
 
+enum MapSubmissionType {
+  PORT
+  ORIGINAL
+  SPECIAL
+}
+
+enum MapTestingRequestResponse {
+  UNREAD
+  ACCEPTED
+  DECLINED
+}
+
+model MapTestingRequest {
+  mapID Int
+  map   Map @relation(fields: [mapID], references: [id], onDelete: Cascade)
+
+  userID Int
+  user   User @relation(fields: [userID], references: [id], onDelete: Cascade)
+
+  accepted MapTestingRequestResponse @default(UNREAD)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([mapID, userID])
+}
+
+model MapSubmission {
+  map   Map @relation(fields: [mapID], references: [id], onDelete: Cascade)
+  mapID Int
+
+  type MapSubmissionType @default(ORIGINAL)
+
+  suggestions Json @default("{}") // MapSubmissionSuggestionsModel
+
+  versions MapSubmissionVersion[]
+
+  currentVersion   MapSubmissionVersion? @relation(name: "current_version", fields: [currentVersionID], references: [id])
+  currentVersionID String                @unique
+
+  @@id([mapID])
+}
+
+model MapSubmissionVersion {
+  id String @id @default(uuid()) // BSP file stored relative to this
+
+  currentVersion MapSubmission? @relation(name: "current_version")
+
+  map   Map @relation(fields: [mapID], references: [id], onDelete: Cascade)
+  mapID Int
+
+  versionNum Int    @db.SmallInt
+  changelog  String
+
+  submission   MapSubmission @relation(fields: [submissionID], references: [mapID])
+  submissionID Int
+
+  @@index([mapID])
+}
+
+// This model will be greatly expanded in future to include screenshots, replays, etc.
+model MapReview {
+  id Int @id @default(autoincrement())
+
+  comment     String
+  comments    MapReviewComment[]
+  suggestions Json               @default("{}") // MapSubmissionSuggestionsModel
+
+  map   Map @relation(fields: [mapID], references: [id], onDelete: Cascade)
+  mapID Int
+
+  user   User @relation(name: "mapreview_reviewer", fields: [userID], references: [id], onDelete: Cascade)
+  userID Int
+
+  resolved   Boolean
+  resolver   User?   @relation(name: "mapreview_resolver", fields: [resolverID], references: [id], onDelete: Cascade)
+  resolverID Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MapReviewComment {
+  id Int @id @default(autoincrement())
+
+  comment String
+
+  user   User @relation(fields: [userID], references: [id], onDelete: Cascade)
+  userID Int
+
+  review   MapReview @relation(fields: [reviewID], references: [id], onDelete: Cascade)
+  reviewID Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model BaseStats {
   id BigInt @id @default(autoincrement())
 
@@ -552,94 +652,6 @@ model Rank {
   updatedAt DateTime @updatedAt
 
   @@index([runID, userID])
-}
-
-enum MapSubmissionType {
-  PORT
-  ORIGINAL
-  SPECIAL
-}
-
-model MapTestingRequest {
-  mapID Int
-  map   Map @relation(fields: [mapID], references: [id], onDelete: Cascade)
-
-  userID Int
-  user   User @relation(fields: [userID], references: [id], onDelete: Cascade)
-
-  accepted Boolean
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@id([mapID, userID])
-}
-
-model MapSubmission {
-  map   Map @relation(fields: [mapID], references: [id], onDelete: Cascade)
-  mapID Int
-
-  type MapSubmissionType @default(ORIGINAL)
-
-  suggestions Json @default("{}") // MapSubmissionSuggestionsModel
-
-  versions MapSubmissionVersion[]
-
-  currentVersion   MapSubmissionVersion? @relation(name: "current_version", fields: [currentVersionID], references: [id])
-  currentVersionID String                @unique
-
-  @@id([mapID])
-}
-
-model MapSubmissionVersion {
-  id String @id @default(uuid()) // BSP file stored relative to this
-
-  currentVersion MapSubmission? @relation(name: "current_version")
-
-  map   Map @relation(fields: [mapID], references: [id], onDelete: Cascade)
-  mapID Int
-
-  versionNum Int    @db.SmallInt
-  changelog  String
-
-  submission   MapSubmission @relation(fields: [submissionID], references: [mapID])
-  submissionID Int
-
-  @@index([mapID])
-}
-
-// This model will be greatly expanded in future to include screenshots, replays, etc.
-model MapReview {
-  id Int @id @default(autoincrement())
-
-  comment     String
-  comments    MapReviewComment[]
-  suggestions Json               @default("{}") // MapSubmissionSuggestionsModel
-  resolved    Boolean
-
-  map   Map @relation(fields: [mapID], references: [id], onDelete: Cascade)
-  mapID Int
-
-  user   User @relation(fields: [userID], references: [id], onDelete: Cascade)
-  userID Int
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model MapReviewComment {
-  id Int @id @default(autoincrement())
-
-  comment String
-
-  user   User @relation(fields: [userID], references: [id], onDelete: Cascade)
-  userID Int
-
-  review   MapReview @relation(fields: [reviewID], references: [id], onDelete: Cascade)
-  reviewID Int
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model XpSystems {

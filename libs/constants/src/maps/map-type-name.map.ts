@@ -13,3 +13,11 @@ export const MapTypeName: ReadonlyMap<Gamemode, string> = new Map([
   [Gamemode.CONC, 'Conc'],
   [Gamemode.DEFRAG, 'Defrag']
 ]);
+
+const MapSubmissionType = {
+  PORT: 'PORT',
+  ORIGINAL: 'ORIGINAL',
+  SPECIAL: 'SPECIAL'
+};
+
+type a = keyof typeof MapSubmissionType;
