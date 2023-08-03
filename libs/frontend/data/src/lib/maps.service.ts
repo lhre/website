@@ -5,6 +5,7 @@ import {
   CreateMap,
   CreateMapCredit,
   Map,
+  UpdateMap,
   MapCredit,
   MapImage,
   MapInfo,
@@ -31,6 +32,10 @@ export class MapsService {
     return this.http.post<Map>('maps', { body, observe: 'response' });
   }
 
+  updateMap(id: number, body: UpdateMap): Observable<any> {
+    return this.http.patch(`maps/${id}`, { body });
+  }
+
   updateMapInfo(id: number, body: MapInfo): Observable<any> {
     return this.http.patch(`maps/${id}/info`, { body });
   }
@@ -51,7 +56,6 @@ export class MapsService {
     return this.http.delete(`maps/credits/${creditID}`);
   }
 
-  // TODO
   getMapFileUploadLocation(id: number): Observable<any> {
     return this.http.get(`maps/${id}/upload`, {
       observe: 'response'

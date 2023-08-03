@@ -1,4 +1,4 @@
-<nb-card>
+<nb-card *ngIf="map">
   <nb-card-header>
     <div class="row align-items-center">
       <h2 class="col">Edit Map</h2>
@@ -15,7 +15,63 @@
     </div>
   </nb-card-header>
   <nb-tabset class="overflow-hidden">
-    <nb-tab tabTitle="Info">
+    <nb-tab
+      *ngIf="
+        isAdmin || (isSubmitter && !isApproved) || (isModerator && !isApproved)
+      "
+      tabTitle="FILE"
+    >
+      <h5 class="mb-1 font-weight-normal">Map File</h5>
+      <mom-file-upload
+        [type]="FileUploadType.MAP"
+        [limitSize]="300"
+        (fileSelected)="onFileSelected($event)"
+      ></mom-file-upload>
+      <button
+        nbButton
+        outline
+        status="info"
+        class="submit-btn"
+        type="submit"
+        [disabled]="mapFile === null"
+        (click)="onFileSubmit($event)"
+      >
+        Save file
+      </button>
+    </nb-tab>
+    <nb-tab
+      *ngIf="
+        isAdmin || (isSubmitter && !isApproved) || (isModerator && !isApproved)
+      "
+      tabTitle="NAME"
+    >
+      <form (ngSubmit)="onNameSubmit()" [formGroup]="mapForm">
+        <div class="form-group">
+          <h5>Map Name</h5>
+          <input
+            nbInput
+            class="form-control"
+            formControlName="mapName"
+            type="text"
+            [ngClass]="{ 'form-control-danger': mapName.invalid }"
+          />
+        </div>
+        <button
+          nbButton
+          outline
+          status="info"
+          class="submit-btn"
+          type="submit"
+          [disabled]="mapForm.invalid || !mapForm.dirty"
+        >
+          Save name
+        </button>
+      </form>
+    </nb-tab>
+    <nb-tab
+      *ngIf="isAdmin || isSubmitter || (isModerator && !isApproved)"
+      tabTitle="Info"
+    >
       <form (ngSubmit)="onInfoSubmit()" [formGroup]="infoForm">
         <div class="form-group mt-2 mb-4">
           <h5>YouTube URL / ID</h5>
@@ -72,13 +128,18 @@
           status="info"
           class="submit-btn"
           type="submit"
-          [disabled]="infoForm.invalid"
+          [disabled]="infoForm.invalid || !infoForm.dirty"
         >
           Save info
         </button>
       </form>
     </nb-tab>
-    <nb-tab tabTitle="Images">
+    <nb-tab
+      *ngIf="
+        isAdmin || (isSubmitter && !isApproved) || (isModerator && !isApproved)
+      "
+      tabTitle="Images"
+    >
       <form (ngSubmit)="onImagesSubmit()">
         <div class="text-center overflow-auto mt-2">
           <div class="d-inline-block text-left mb-3">
@@ -138,7 +199,10 @@
         </div>
       </form>
     </nb-tab>
-    <nb-tab tabTitle="Credits">
+    <nb-tab
+      *ngIf="isAdmin || isSubmitter || (isModerator && !isApproved)"
+      tabTitle="Credits"
+    >
       <form [formGroup]="creditsForm">
         <div class="mt-2">
           <mom-map-credits
@@ -153,17 +217,14 @@
           outline
           status="info"
           type="submit"
-          [disabled]="creditsForm.invalid"
+          [disabled]="creditsForm.invalid || !creditsForm.dirty"
           (click)="onCreditsSubmit($event)"
         >
           Save credits
         </button>
       </form>
     </nb-tab>
-    <nb-tab
-      *ngIf="(isAdmin || isModerator) && map"
-      tabTitle="Admin Map Settings"
-    >
+    <nb-tab *ngIf="isAdmin" tabTitle="Admin Map Settings">
       <form [formGroup]="adminForm">
         <div class="text-center">
           <button

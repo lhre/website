@@ -33,7 +33,7 @@ export interface Map extends Omit<PrismaMap, 'thumbnailID' | 'mainTrackID'> {
   personalBest?: Rank;
 }
 
-export interface UpdateMap extends Pick<Map, 'status'> {}
+export interface UpdateMap extends Partial<Pick<Map, 'name' | 'status'>> {}
 
 export interface CreateMap extends Pick<Map, 'name' | 'type'> {
   info: CreateMapInfo;

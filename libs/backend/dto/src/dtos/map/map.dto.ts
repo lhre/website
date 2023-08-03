@@ -118,7 +118,7 @@ export class MapDto implements Map {
   readonly updatedAt: Date;
 }
 
-export class UpdateMapDto extends PickType(MapDto, ['status'] as const) {}
+export class UpdateMapDto extends PickType(MapDto, ['name', 'status'] as const) {}
 
 export class CreateMapDto
   extends PickType(MapDto, ['name', 'type'] as const)

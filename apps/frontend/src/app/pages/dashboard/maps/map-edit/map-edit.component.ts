@@ -1,4 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpEventType
+} from '@angular/common/http';
 import { CreditChangeEvent } from '../map-credits/map-credit/map-credit.component';
 import { finalize, switchMap, takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
@@ -14,7 +19,7 @@ import {
   LocalUserService,
   MapsService
 } from '@momentum/frontend/data';
-import { MapCreditType } from '@momentum/constants';
+import { MapCreditType, MapStatus, Role } from '@momentum/constants';
 
 const youtubeRegex = /[\w-]{11}/;
 
@@ -27,6 +32,8 @@ export class MapEditComponent implements OnInit, OnDestroy {
   protected readonly FileUploadType = FileUploadType;
   private ngUnsub = new Subject<void>();
   map: Map;
+  mapFile: File;
+  isApproved: boolean;
   images: MapImage[];
   imagesLimit: number;
   credits: Record<MapCreditType, MapCredit[]>;
@@ -34,10 +41,16 @@ export class MapEditComponent implements OnInit, OnDestroy {
   isSubmitter: boolean;
   isAdmin: boolean;
   isModerator: boolean;
+  mapUploadPercentage: number;
+  isUploadingMap: boolean;
+
+  mapForm: FormGroup = this.fb.group({
+    mapName: ['', [Validators.required, Validators.maxLength(32)]]
+  });
 
   infoForm: FormGroup = this.fb.group({
     youtubeID: ['', [Validators.pattern(youtubeRegex)]],
-    description: ['', [Validators.maxLength(1000)]]
+    description: ['', [Validators.required, Validators.maxLength(1000)]]
   });
 
   creditsForm: FormGroup = this.fb.group({
@@ -45,6 +58,10 @@ export class MapEditComponent implements OnInit, OnDestroy {
   });
 
   adminForm: FormGroup = this.fb.group({});
+
+  get mapName() {
+    return this.mapForm.get('mapName');
+  }
 
   get youtubeID() {
     return this.infoForm.get('youtubeID');
@@ -64,6 +81,9 @@ export class MapEditComponent implements OnInit, OnDestroy {
     private toasterService: NbToastrService,
     private fb: FormBuilder
   ) {
+    this.map = undefined;
+    this.mapFile = null;
+    this.isApproved = false;
     this.imagesLimit = 6;
     this.images = [];
     this.credits = {
@@ -86,23 +106,22 @@ export class MapEditComponent implements OnInit, OnDestroy {
       )
       .subscribe((map: Map) => {
         this.map = map;
+        this.isApproved = map.status === MapStatus.APPROVED;
         this.localUserService
           .getLocal()
           .pipe(takeUntil(this.ngUnsub))
           .subscribe((localUser) => {
-            // TODO
-            this.isAdmin = true;
-            this.isModerator = true;
-            // this.isAdmin = this.localUserService.hasRole(Role.ADMIN, localUser);
-            // this.isModerator = this.localUserService.hasRole(
-            //   Role.MODERATOR,
-            //   localUser
-            // );
+            this.isAdmin = this.localUserService.hasRole(Role.ADMIN, localUser);
+            this.isModerator = this.localUserService.hasRole(
+              Role.MODERATOR,
+              localUser
+            );
             this.isSubmitter = this.map.submitterID === localUser.id;
 
             if (!(this.isSubmitter || this.isAdmin || this.isModerator))
               this.router.navigate(['/dashboard/maps/' + this.map.id]);
 
+            this.mapForm.patchValue({ mapName: map.name });
             this.infoForm.patchValue(map.info);
             this.images = map.images;
 
@@ -121,6 +140,73 @@ export class MapEditComponent implements OnInit, OnDestroy {
               .patchValue(this.credits[MapCreditType.AUTHOR]);
           });
       });
+  }
+
+  onFileSelected(file: File) {
+    this.mapFile = file;
+  }
+
+  onFileSubmit($event) {
+    $event.target.disabled = true;
+    this.mapService.getMapFileUploadLocation(this.map.id).subscribe({
+      next: (response) => {
+        this.mapService
+          .uploadMapFile(response.headers.get('Location'), this.mapFile)
+          .subscribe({
+            next: (event: HttpEvent<any>) => {
+              switch (event.type) {
+                case HttpEventType.Sent:
+                  this.isUploadingMap = true;
+                  break;
+                case HttpEventType.Response:
+                  this.toasterService.success('Updated the map!', 'Success');
+                  this.isUploadingMap = false;
+                  break;
+                case HttpEventType.UploadProgress: {
+                  const calc: number = Math.round(
+                    (event['loaded'] / event['total']) * 100
+                  );
+                  if (this.mapUploadPercentage !== calc) {
+                    this.mapUploadPercentage = calc;
+                  }
+                  break;
+                }
+              }
+            },
+            error: (httpError: HttpErrorResponse) => {
+              const errorMessage = httpError?.error?.message ?? 'Unknown error';
+              this.toasterService.danger(
+                errorMessage,
+                'Failed to update the map!'
+              );
+              this.isUploadingMap = false;
+            }
+          });
+      },
+      error: (httpError: HttpErrorResponse) => {
+        const errorMessage = httpError?.error?.message ?? 'Unknown error';
+        this.toasterService.danger(
+          errorMessage,
+          'Failed to get upload location!'
+        );
+        this.isUploadingMap = false;
+      }
+    });
+    $event.target.disabled = false;
+  }
+
+  onNameSubmit() {
+    if (this.mapForm.invalid) return;
+    const name = this.mapName.value;
+    this.mapService.updateMap(this.map.id, { name }).subscribe({
+      next: () => {
+        this.toasterService.success('Updated the map!', 'Success');
+      },
+      error: (httpError: HttpErrorResponse) => {
+        const errorMessage = httpError?.error?.message ?? 'Unknown error';
+        this.toasterService.danger(errorMessage, 'Failed to update the map!');
+      }
+    });
   }
 
   onInfoSubmit() {
@@ -217,6 +303,7 @@ export class MapEditComponent implements OnInit, OnDestroy {
   }
 
   onCreditChanged($event: CreditChangeEvent) {
+    this.creditsForm.markAsDirty();
     if ($event.added) {
       if ($event.type === MapCreditType.AUTHOR)
         this.creditsForm.get('authors').patchValue($event.user);
