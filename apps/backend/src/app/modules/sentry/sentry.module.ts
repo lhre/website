@@ -33,6 +33,9 @@ export class SentryModule {
             const logger = new Logger('Sentry');
             let enabled = false;
 
+            // TODO: Figure out what sort of tracing stuff is being enabled here.
+            // We're not using Sentry for performance stuff, probably don't *any*
+            // tracing, unless there's no performance cost whatsoever.
             if (opts.environment === Environment.PRODUCTION) {
               if (!opts.sentryOpts.dsn) {
                 logger.error('Sentry DSN not set');

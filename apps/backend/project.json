@@ -19,7 +19,9 @@
       },
       "configurations": {
         "development": {},
-        "production": {}
+        "production": {
+          "generatePackageJson": true
+        }
       }
     },
     "serve": {
@@ -56,6 +58,27 @@
           "ci": true,
           "codeCoverage": false
         }
+      }
+    },
+    "docker-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx run backend:build:production",
+          "docker build -f apps/backend/Dockerfile . -t mmod-backend"
+        ]
+      }
+    },
+    "docker-build-arm64": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx run backend:build:production",
+          "docker build -f apps/backend/Dockerfile . -t mmod-backend-arm64 --platform linux/arm64",
+          "docker image tag mmod-backend-arm64 tsa96/mmod-backend-arm64",
+          "docker image push tsa96/mmod-backend-arm64"
+        ],
+        "parallel": false
       }
     }
   },

@@ -6,9 +6,9 @@
 
 export interface ConfigInterface {
   env: Environment;
-  url: string;
   domain: string;
   port: number;
+  listen_addr: string;
   appIDs: number[];
   jwt: {
     secret: string;

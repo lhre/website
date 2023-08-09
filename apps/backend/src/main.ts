@@ -15,8 +15,8 @@ import { DbService } from './app/modules/database/db.service';
 import { Environment } from '@momentum/backend/config';
 import cookie from '@fastify/cookie';
 import helmet from '@fastify/helmet';
-import cors from '@fastify/cors';
 import { FastifyReply } from 'fastify';
+import { Logger } from 'nestjs-pino';
 
 async function bootstrap() {
   // Transforms `BigInt`s to strings in JSON.stringify, for cases that haven't
@@ -25,14 +25,21 @@ async function bootstrap() {
     return this.toString();
   };
 
+  // await otelSDK.start();
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter(),
     {
+      bufferLogs: true, // Buffer logs until Pino is attached
       rawBody: true // So we can use RawBodyRequest
     }
   );
 
+  // Use Pino as our logger
+  app.useLogger(app.get(Logger));
+
+  app.enableShutdownHooks();
   const configService = app.get(ConfigService);
   const env: Environment = configService.get('env');
 
@@ -94,22 +101,22 @@ async function bootstrap() {
   // We use a pretty strict CORS policy, so register these headers
   // In production this allows https://momentum-mod.org to communicate with
   // https://api.momentum-mod.org/
-  await app.register(cors, {
-    origin:
-      env === Environment.PRODUCTION
-        ? this.config.get('url')
-        : 'http://localhost:4200',
-    allowedHeaders: [
-      'Origin',
-      'Access-Control-Allow-Origin',
-      'X-Requested-With',
-      'Accept',
-      'Content-Type',
-      'Authorization'
-    ],
-    exposedHeaders: 'Location',
-    methods: ['GET', 'PUT', 'OPTIONS', 'POST', 'DELETE', 'PATCH']
-  });
+  // await app.register(cors, {
+  //   origin:
+  //     env === Environment.PRODUCTION
+  //       ? configService.get('url')
+  //       : 'http://localhost:4200',
+  //   allowedHeaders: [
+  //     'Origin',
+  //     'Access-Control-Allow-Origin',
+  //     'X-Requested-With',
+  //     'Accept',
+  //     'Content-Type',
+  //     'Authorization'
+  //   ],
+  //   exposedHeaders: 'Location',
+  //   methods: ['GET', 'PUT', 'OPTIONS', 'POST', 'DELETE', 'PATCH']
+  // });
 
   // Cookies for transferring JWTs back to client after OpenID auth
   await app.register(cookie, { secret: configService.get('sessionSecret') });
@@ -138,7 +145,7 @@ async function bootstrap() {
   });
 
   // Here we fucking go!!!
-  await app.listen(configService.get('port'));
+  await app.listen(configService.get('port'), configService.get('listen_addr'));
 }
 
 bootstrap().then();

@@ -9,7 +9,7 @@ import {
 
 export const ConfigFactory = (): ConfigInterface => {
   const env: Environment = process.env['NODE_ENV'] as Environment;
-  const port: number = +(process.env['NODE_PORT'] ?? 3000);
+  const port: number = +(process.env['NEST_PORT'] ?? 3000);
 
   const isProd = env === Environment.PRODUCTION;
   const isTest = env === Environment.TEST;
@@ -17,8 +17,8 @@ export const ConfigFactory = (): ConfigInterface => {
   return {
     env: env,
     port: port,
-    url: process.env['BASE_URL'] ?? `http://localhost:${port}`,
-    domain: isProd ? 'momentum-mod.org' : 'localhost',
+    listen_addr: process.env['NEST_LISTEN_ADDR'] ?? '127.0.0.1',
+    domain: process.env['ROOT_URL'] ?? `http://localhost:${port}`,
     appIDs: [669270, 1802710],
     jwt: {
       secret: process.env['JWT_SECRET'] ?? '',

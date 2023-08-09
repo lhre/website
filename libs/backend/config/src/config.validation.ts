@@ -1,7 +1,8 @@
 ﻿import { Environment } from './config.interface';
 import {
-  IsDefined,
   IsEnum,
+  IsInt,
+  IsIP,
   IsOptional,
   IsString,
   IsUrl,
@@ -31,11 +32,13 @@ export class ConfigValidation {
     message:
       'A valid (dev, prod, test) NODE_ENV environment variable must be set'
   })
-  @IsDefined()
   readonly NODE_ENV?: Environment;
 
-  @IsDefined()
-  readonly NODE_PORT?: number;
+  @IsInt()
+  readonly NEST_PORT?: number;
+
+  @IsIP()
+  readonly NEST_LISTEN_ADDR?: string;
 
   @IsOptional()
   @IsUrl({ require_tld: false })

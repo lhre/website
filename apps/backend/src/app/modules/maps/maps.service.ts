@@ -19,7 +19,7 @@ import {
 import { FileStoreCloudService } from '../filestore/file-store-cloud.service';
 import { FileStoreCloudFile } from '../filestore/file-store.interface';
 import { ConfigService } from '@nestjs/config';
-import sharp from 'sharp';
+// import sharp from 'sharp';
 import { RunsService } from '../runs/runs.service';
 import {
   AdminCtlMapsGetAllQueryDto,
@@ -995,14 +995,15 @@ export class MapsService {
     width: number,
     height: number
   ): Promise<FileStoreCloudFile> {
+    return {} as any;
     try {
-      return this.fileCloudService.storeFileCloud(
-        await sharp(imgBuffer)
-          .resize(width, height, { fit: 'inside' })
-          .jpeg({ mozjpeg: true })
-          .toBuffer(),
-        fileName
-      );
+      // return this.fileCloudService.storeFileCloud(
+      //   await sharp(imgBuffer)
+      //     .resize(width, height, { fit: 'inside' })
+      //     .jpeg({ mozjpeg: true })
+      //     .toBuffer(),
+      //   fileName
+      // );
     } catch {
       // This looks bad, but sharp is very non-specific about its errors
       throw new BadRequestException('Invalid image file');
