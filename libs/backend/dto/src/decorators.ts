@@ -18,7 +18,8 @@ import {
   ValidateNested,
   IsEnum,
   IsDateString,
-  IsString
+  IsString,
+  Max
 } from 'class-validator';
 import { IsBigintValidator } from '@momentum/backend/validators';
 import { intersection } from '@momentum/util-fn';
@@ -210,6 +211,7 @@ export function TakeQueryProperty(def: number): PropertyDecorator {
     }),
     TypeDecorator(() => Number),
     IsPositive(),
+    Max(500),
     IsOptional()
   );
 }
