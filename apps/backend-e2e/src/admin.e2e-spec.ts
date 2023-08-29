@@ -959,11 +959,11 @@ describe('Admin', () => {
         faMap;
 
       beforeAll(async () => {
-        [[user, token], [reviewer, reviewerToken], [modToken], adminToken] =
+        [[user, token], [reviewer, reviewerToken], modToken, adminToken] =
           await Promise.all([
             db.createAndLoginUser(),
             db.createAndLoginUser({ data: { roles: Role.REVIEWER } }),
-            db.createAndLoginUser({ data: { roles: Role.MODERATOR } }),
+            db.loginNewUser({ data: { roles: Role.MODERATOR } }),
             db.loginNewUser({ data: { roles: Role.ADMIN } })
           ]);
 
