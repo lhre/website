@@ -5,13 +5,19 @@ import {
   ForbiddenException
 } from '@nestjs/common';
 import {
+  CreateMapReviewDto,
   DtoFactory,
   MapReviewDto,
   MapReviewGetIdDto,
   MapReviewsGetQueryDto,
   PagedResponseDto
 } from '@momentum/backend/dto';
-import { Role, CombinedRoles } from '@momentum/constants';
+import {
+  MapStatusNew,
+  Role,
+  CombinedRoles,
+  MapTestingRequestState
+} from '@momentum/constants';
 import { MapReview, Prisma, User } from '@prisma/client';
 import { MapsService } from './maps.service';
 import { EXTENDED_PRISMA_SERVICE } from '../database/db.constants';
@@ -78,6 +84,81 @@ export class MapReviewService {
       for (const review of filteredResponse) delete review.reviewer;
 
     return new PagedResponseDto(MapReviewDto, [paginatedResponse, totalCount]);
+  }
+
+  async createReview(
+    userID: number,
+    mapID: number,
+    body: CreateMapReviewDto
+  ): Promise<MapReviewDto> {
+    // get map and check if it exists
+    const map = await this.db.mMap.findUnique({ where: { id: mapID } });
+
+    if (!map) throw new NotFoundException('Map not found');
+
+    // get user to check if he has write permission
+    const user = await this.db.user.findUnique({ where: { id: userID } });
+
+    if (
+      map.status === MapStatusNew.FINAL_APPROVAL &&
+      Bitflags.has(user.roles, CombinedRoles.MOD_OR_ADMIN)
+    ) {
+      const dbResponse = await this.db.mapReview.create({
+        data: {
+          reviewer: { connect: { id: userID } },
+          mmap: { connect: { id: map.id } },
+          mainText: body.mainText
+        }
+      });
+
+      return DtoFactory(MapReviewDto, dbResponse);
+    } else if (
+      map.status === MapStatusNew.CONTENT_APPROVAL &&
+      Bitflags.has(user.roles, CombinedRoles.REVIEWER_AND_ABOVE)
+    ) {
+      const dbResponse = await this.db.mapReview.create({
+        data: {
+          reviewer: { connect: { id: userID } },
+          mmap: { connect: { id: map.id } },
+          mainText: body.mainText
+        }
+      });
+
+      return DtoFactory(MapReviewDto, dbResponse);
+    } else if (
+      map.status === MapStatusNew.PRIVATE_TESTING &&
+      (Bitflags.has(user.roles, CombinedRoles.REVIEWER_AND_ABOVE) ||
+        (await this.db.mapTestingRequest.exists({
+          where: { mapID, userID, state: MapTestingRequestState.ACCEPTED }
+        })))
+    ) {
+      const dbResponse = await this.db.mapReview.create({
+        data: {
+          reviewer: { connect: { id: userID } },
+          mmap: { connect: { id: map.id } },
+          mainText: body.mainText
+        }
+      });
+
+      return DtoFactory(MapReviewDto, dbResponse);
+    } else if (
+      map.status === MapStatusNew.APPROVED ||
+      map.status === MapStatusNew.PUBLIC_TESTING
+    ) {
+      const dbResponse = await this.db.mapReview.create({
+        data: {
+          reviewer: { connect: { id: userID } },
+          mmap: { connect: { id: map.id } },
+          mainText: body.mainText
+        }
+      });
+
+      return DtoFactory(MapReviewDto, dbResponse);
+    } else {
+      throw new ForbiddenException(
+        'User cannot create a review for the given map'
+      );
+    }
   }
 
   async getReview(
