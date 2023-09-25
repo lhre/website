@@ -6,6 +6,7 @@ export * from './map/zone/map-zone-stats.dto';
 export * from './map/zone/map-zone-trigger.dto';
 export * from './map/zone/map-zone-trigger-properties.dto';
 export * from './map/map.dto';
+export * from './map/map-zone-data.dto';
 export * from './map/map-info.dto';
 export * from './map/map-image.dto';
 export * from './map/map-stats.dto';

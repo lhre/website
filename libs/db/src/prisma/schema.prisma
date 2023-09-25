@@ -311,102 +311,6 @@ model MapNotify {
   @@index([userID, mapID])
 }
 
-model MapTrack {
-  id Int @id @default(autoincrement())
-
-  trackNum   Int     @db.SmallInt
-  numZones   Int     @db.SmallInt
-  isLinear   Boolean
-  difficulty Int     @db.SmallInt
-
-  mainTrack MMap? @relation("map_maintrack")
-
-  mmap  MMap @relation(fields: [mapID], references: [id], onDelete: Cascade)
-  mapID Int
-
-  stats       MapTrackStats?
-  zones       MapZone[]
-  runSessions RunSession[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([mapID])
-}
-
-model MapTrackStats {
-  id Int @id @default(autoincrement())
-
-  completions       Int @default(0)
-  uniqueCompletions Int @default(0)
-
-  track   MapTrack @relation(fields: [trackID], references: [id], onDelete: Cascade)
-  trackID Int      @unique
-
-  baseStats   BaseStats @relation(fields: [baseStatsID], references: [id], onDelete: Cascade)
-  baseStatsID BigInt    @unique
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([baseStatsID, trackID])
-}
-
-model MapZone {
-  id Int @id @default(autoincrement())
-
-  zoneNum Int @db.SmallInt
-
-  track   MapTrack @relation(fields: [trackID], references: [id], onDelete: Cascade)
-  trackID Int
-
-  stats    MapZoneStats[]
-  triggers MapZoneTrigger[]
-
-  @@index([trackID, zoneNum])
-}
-
-model MapZoneTrigger {
-  id Int @id @default(autoincrement())
-
-  type         Int                       @db.SmallInt // Old api says this is int 0-4, probs start/end/cp/stage/?
-  pointsHeight Float                     @db.Real
-  pointsZPos   Float                     @db.Real
-  points       Json? // TODO_0.10: Validate these. On current zone system, should have max 32 values and match /p\d+/
-  properties   MapZoneTriggerProperties?
-
-  zone   MapZone @relation(fields: [zoneID], references: [id], onDelete: Cascade)
-  zoneID Int     @unique
-
-  @@index([zoneID])
-}
-
-model MapZoneTriggerProperties {
-  id Int @id @default(autoincrement())
-
-  properties Json?
-
-  trigger   MapZoneTrigger @relation(fields: [triggerID], references: [id], onDelete: Cascade)
-  triggerID Int            @unique
-
-  @@index([triggerID])
-}
-
-model MapZoneStats {
-  id Int @id @default(autoincrement())
-
-  completions       Int @default(0)
-  uniqueCompletions Int @default(0)
-
-  zone   MapZone @relation(fields: [zoneID], references: [id], onDelete: Cascade)
-  zoneID Int     @unique
-
-  baseStats   BaseStats? @relation(fields: [baseStatsID], references: [id], onDelete: Cascade)
-  baseStatsID BigInt?    @unique
-
-  @@index([baseStatsID, zoneID])
-}
-
 model MapStats {
   id Int @id @default(autoincrement())
 
@@ -522,80 +426,60 @@ model MapReviewComment {
   @@index([reviewID])
 }
 
-model BaseStats {
-  id BigInt @id @default(autoincrement())
+model Leaderboard {
+  id Int @id @default(autoincrement())
 
-  jumps          Int   @default(0)
-  strafes        Int   @default(0)
-  avgStrafeSync  Float @default(0) @db.Real
-  avgStrafeSync2 Float @default(0) @db.Real
-  enterTime      Float @default(0) @db.Real
-  totalTime      Float @default(0) @db.Real
-  velAvg3D       Float @default(0) @db.Real
-  velAvg2D       Float @default(0) @db.Real
-  velMax3D       Float @default(0) @db.Real
-  velMax2D       Float @default(0) @db.Real
-  velEnter3D     Float @default(0) @db.Real
-  velEnter2D     Float @default(0) @db.Real
-  velExit3D      Float @default(0) @db.Real
-  velExit2D      Float @default(0) @db.Real
-
-  mapTrackStats MapTrackStats?
-  mapStats      MapStats?
-  mapZoneStats  MapZoneStats?
-  runZoneStats  RunZoneStats?
-  run           Run?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  trackNum Int     @db.SmallInt
+  tier     Int     @db.SmallInt
+  gamemode Int     @db.SmallInt // gamemode
+  ranked   Boolean
+  tags     Json    @default("[]")
 }
 
 model Run {
-  id BigInt @id @default(autoincrement())
-
-  trackNum Int    @db.SmallInt
-  zoneNum  Int    @db.SmallInt
-  ticks    Int
-  tickRate Float  @db.Real
-  time     Float  @db.Real
-  flags    Int
-  file     String
-  hash     String @db.Char(40)
-
-  rank Rank?
-
-  overallStats   BaseStats? @relation(fields: [overallStatsID], references: [id], onDelete: Cascade)
-  overallStatsID BigInt?    @unique
-
-  zoneStats RunZoneStats[]
+  user   User? @relation(fields: [userID], references: [id], map: "run_user_fk", onDelete: SetNull)
+  userID Int?
 
   mmap  MMap @relation(fields: [mapID], references: [id], onDelete: Cascade)
   mapID Int
 
-  user   User? @relation(fields: [userID], references: [id], map: "run_user_fk", onDelete: SetNull)
-  userID Int?
+  style     Int    @db.SmallInt
+  trackType Int    @db.SmallInt
+  trackNum  Int    @db.SmallInt
+  ticks     Int
+  time      Float  @db.Real
+  flags     Int
+  file      String
+  hash      String @db.Char(40)
+
+  overallStats   BaseStats? @relation(fields: [overallStatsID], references: [id], onDelete: Cascade)
+  overallStatsID BigInt?    @unique
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   @@index([overallStatsID, mapID, userID, flags])
 }
 
-model RunZoneStats {
-  id Int @id @default(autoincrement())
+model Rank {
+  id       Int  @id @default(autoincrement())
+  gameType Int  @db.SmallInt
+  flags    Int  @default(0)
+  rank     Int? // Making this @unique would be quite nice but it'd probably shit itself when doing batch rank +1 increases
+  rankXP   Int? @default(0)
 
-  zoneNum Int @default(0) @db.SmallInt
+  mmap  MMap @relation(fields: [mapID], references: [id], onDelete: Cascade)
+  mapID Int
+
+  user   User @relation(fields: [userID], references: [id], onDelete: Cascade)
+  userID Int
 
   run   Run    @relation(fields: [runID], references: [id], onDelete: Cascade)
-  runID BigInt
-
-  baseStats   BaseStats? @relation(fields: [baseStatsID], references: [id], onDelete: Cascade)
-  baseStatsID BigInt?    @unique
+  runID BigInt @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([baseStatsID, runID])
+  @@index([runID, userID])
 }
 
 model RunSession {
@@ -632,26 +516,32 @@ model RunSessionTimestamp {
   @@index([sessionID])
 }
 
-model Rank {
-  id       Int  @id @default(autoincrement())
-  gameType Int  @db.SmallInt
-  flags    Int  @default(0)
-  rank     Int? // Making this @unique would be quite nice but it'd probably shit itself when doing batch rank +1 increases
-  rankXP   Int? @default(0)
+model BaseStats {
+  id BigInt @id @default(autoincrement())
 
-  mmap  MMap @relation(fields: [mapID], references: [id], onDelete: Cascade)
-  mapID Int
+  jumps          Int   @default(0)
+  strafes        Int   @default(0)
+  avgStrafeSync  Float @default(0) @db.Real
+  avgStrafeSync2 Float @default(0) @db.Real
+  enterTime      Float @default(0) @db.Real
+  totalTime      Float @default(0) @db.Real
+  velAvg3D       Float @default(0) @db.Real
+  velAvg2D       Float @default(0) @db.Real
+  velMax3D       Float @default(0) @db.Real
+  velMax2D       Float @default(0) @db.Real
+  velEnter3D     Float @default(0) @db.Real
+  velEnter2D     Float @default(0) @db.Real
+  velExit3D      Float @default(0) @db.Real
+  velExit2D      Float @default(0) @db.Real
 
-  user   User @relation(fields: [userID], references: [id], onDelete: Cascade)
-  userID Int
-
-  run   Run    @relation(fields: [runID], references: [id], onDelete: Cascade)
-  runID BigInt @unique
+  mapTrackStats MapTrackStats?
+  mapStats      MapStats?
+  mapZoneStats  MapZoneStats?
+  runZoneStats  RunZoneStats?
+  run           Run?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([runID, userID])
 }
 
 model XpSystems {

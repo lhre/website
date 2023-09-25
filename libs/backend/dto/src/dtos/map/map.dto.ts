@@ -50,6 +50,7 @@ import { IsMapName } from '@momentum/backend/validators';
 import { MapSubmissionDto } from './map-submission.dto';
 import { MapSubmissionSuggestionDto } from './map-submission-suggestion.dto';
 import { MapSubmissionPlaceholderDto } from './map-submission-placeholder.dto';
+import { MapZoneDataDto } from './map-zone-data.dto';
 
 const ENDPOINT_URL = Config.storage.endpointUrl;
 const BUCKET = Config.storage.bucketName;
@@ -219,6 +220,9 @@ export class CreateMapDto
   @IsArray()
   @ArrayMinSize(1)
   readonly tracks: CreateMapTrackDto[];
+
+  @NestedProperty(MapZoneDataDto, { required: true })
+  zoneData: MapZoneDataDto;
 
   @NestedProperty(CreateMapCreditDto, { required: true, isArray: true })
   @IsArray()

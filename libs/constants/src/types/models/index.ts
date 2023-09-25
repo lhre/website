@@ -1,4 +1,5 @@
 export * from './map/zone/map-zone.model';
+export * from './map/zone/map-zone-data.model';
 export * from './map/zone/map-zone-stats.model';
 export * from './map/zone/map-zone-trigger.model';
 export * from './map/zone/map-zone-trigger-properties.model';
