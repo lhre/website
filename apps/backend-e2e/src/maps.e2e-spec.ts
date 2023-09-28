@@ -2502,7 +2502,7 @@ describe('Maps', () => {
           submitter: { connect: { id: u1.id } }
         });
 
-        //user with testing
+        //user with testing invite
         [[u5, u5Token]] = await Promise.all([
           db.createAndLoginUser({
             data: {
@@ -2573,7 +2573,7 @@ describe('Maps', () => {
         });
       });
 
-      it('should create a review on a map currently under private testing with testing invites', async () => {
+      it('should create a review on a map currently under private testing with testing invite', async () => {
         req.post({
           url: `maps/${map3.id}/reviews`,
           status: 201,
@@ -2587,7 +2587,7 @@ describe('Maps', () => {
         req.post({
           url: `maps/${map4.id}/reviews`,
           status: 201,
-          body: { mainText: 'Forbidden content approval testing review test' },
+          body: { mainText: 'Success content approval testing review test' },
           token: u2Token
         });
       });
@@ -2597,7 +2597,7 @@ describe('Maps', () => {
         req.post({
           url: `maps/${map4.id}/reviews`,
           status: 403,
-          body: { mainText: 'Success content approval testing review test' },
+          body: { mainText: 'Forbidden content approval testing review test' },
           token: u4Token
         });
       });
